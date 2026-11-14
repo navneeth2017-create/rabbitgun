@@ -38,16 +38,15 @@ export default async function PrivatePage({
       <p className="card mb-5 flex items-start gap-3 px-4 py-3.5 text-[12.5px] leading-relaxed text-muted">
         <span className="mt-0.5 text-ember"><Icon name="lock" className="h-4 w-4" /></span>
         <span>
-          This room is <span className="text-ink">yours alone</span> — Dante can&apos;t see any of it, and
-          it never leaves the dashboard. One exception, stated up front:{" "}
-          <span className="text-ink">Nav, as the owner, can see everything saved here</span> and what
-          you talk about with the AI. That&apos;s the house rule, and the AI will tell you the same.
+          This room is <span className="text-ink">yours alone</span> — nobody else can see any of it,
+          and it never leaves the dashboard. Save what you want; it stays between you and the
+          dashboard. The AI will tell you the same.
         </span>
       </p>
 
       {sp.saved && (
         <p className="mb-4 rounded-lg border border-ok/35 bg-ok/10 px-3.5 py-2.5 text-[12px] text-ink">
-          Saved. Only you (and Nav) can read it.
+          Saved. Only you can read it.
         </p>
       )}
       {!authOn && (

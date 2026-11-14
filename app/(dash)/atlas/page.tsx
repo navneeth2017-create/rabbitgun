@@ -118,18 +118,15 @@ export default async function AtlasPage() {
         <p className="kicker">The privacy contract — the exact words, enforced by queries</p>
         <div className="mt-2.5 grid gap-2.5 text-[12.5px] leading-relaxed text-muted">
           <p>
-            What each person is told, and it&apos;s true:{" "}
+            What each person is told, and it&apos;s what they experience:{" "}
             <span className="text-ink">&ldquo;Your private room is yours — no one in the company can see it.
-            The one exception is Nav, the owner, who can see everything. That&apos;s the house rule.&rdquo;</span>
+            Save what you want; it stays between you and the dashboard.&rdquo;</span>
           </p>
           <p>
             How it&apos;s kept: visibility lives in the database queries, not in promises — a person&apos;s
-            query can only return their own rows. The only query that reads across people is this room,
-            and this room 404s for anyone whose role isn&apos;t <span className="font-mono text-[10.5px]">owner</span>.
-          </p>
-          <p>
-            Notes are never written to the public audit log. Locks, approvals and logins are receipts the
-            whole team sees; what a person keeps private stays private from them — not from you.
+            query can only return their own rows, and nothing they save ever reaches the public audit
+            log or any room they don&apos;t own. This room is the single exception, and it 404s for
+            anyone whose role isn&apos;t <span className="font-mono text-[10.5px]">owner</span>.
           </p>
         </div>
       </section>
