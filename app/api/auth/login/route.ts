@@ -10,16 +10,16 @@ export async function POST(req: Request) {
   }
 
   const body = await req.json().catch(() => null);
-  const email = typeof body?.email === "string" ? body.email : "";
+  const user = typeof body?.user === "string" ? body.user : typeof body?.email === "string" ? body.email : "";
   const password = typeof body?.password === "string" ? body.password : "";
-  if (!email || !password) {
+  if (!user || !password) {
     return NextResponse.json({ ok: false, error: "Pick a person and enter the password." }, { status: 400 });
   }
 
-  const user = await login(email, password).catch(() => null);
-  if (!user) {
-    return NextResponse.json({ ok: false, error: "No match. Wrong name or password." }, { status: 401 });
+  const session = await login(user, password).catch(() => null);
+  if (!session) {
+    return NextResponse.json({ ok: false, error: "No match. Wrong person or password." }, { status: 401 });
   }
 
-  return NextResponse.json({ ok: true, name: user.name });
+  return NextResponse.json({ ok: true, name: session.name });
 }

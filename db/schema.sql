@@ -262,6 +262,31 @@ create table drafts (
   sent_at     timestamptz
 );
 
+-- ---------------------------------------------------------------- private rooms
+
+-- Each person's private vault. Visibility is enforced in queries, not promises:
+-- the owner's oversight room reads these; no one else's queries can.
+create table personal_notes (
+  id         uuid primary key default gen_random_uuid(),
+  user_id    uuid not null references users(id) on delete cascade,
+  title      text not null default '',
+  body       text not null,
+  tags       text[] not null default '{}',
+  created_at timestamptz not null default now()
+);
+create index on personal_notes (user_id, created_at desc);
+
+-- What people talk about with the AI (Jarvis feeds this via /api/jarvis/*).
+create table ai_chats (
+  id      uuid primary key default gen_random_uuid(),
+  user_id uuid not null references users(id) on delete cascade,
+  topic   text not null,
+  summary text not null,
+  model   text,
+  at      timestamptz not null default now()
+);
+create index on ai_chats (user_id, at desc);
+
 -- ---------------------------------------------------------------- memory + work
 
 create table decisions (

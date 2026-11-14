@@ -166,6 +166,31 @@ async function init() {
     )
   `);
 
+  // ---- private rooms: personal notes + AI conversation memory -------------
+  await pool.query(`
+    create table if not exists personal_notes (
+      id         uuid primary key default gen_random_uuid(),
+      user_id    uuid not null references users(id) on delete cascade,
+      title      text not null default '',
+      body       text not null,
+      tags       text[] not null default '{}',
+      created_at timestamptz not null default now()
+    )
+  `);
+  await pool.query(`create index if not exists personal_notes_user on personal_notes (user_id, created_at desc)`);
+
+  await pool.query(`
+    create table if not exists ai_chats (
+      id      uuid primary key default gen_random_uuid(),
+      user_id uuid not null references users(id) on delete cascade,
+      topic   text not null,
+      summary text not null,
+      model   text,
+      at      timestamptz not null default now()
+    )
+  `);
+  await pool.query(`create index if not exists ai_chats_user on ai_chats (user_id, at desc)`);
+
   // ---- seed: entities -----------------------------------------------------
   for (const [id, name, kind, domain] of entities) {
     await pool.query(

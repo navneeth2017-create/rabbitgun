@@ -5,14 +5,14 @@ import { useRouter } from "next/navigation";
 import { Mark } from "@/components/icons";
 
 const people = [
-  { email: "nav@rabbitgun.internal", initial: "N", name: "Nav", role: "owner" },
-  { email: "dante@rabbitgun.internal", initial: "D", name: "Dante", role: "member" },
-  { email: "tom@rabbitgun.internal", initial: "T", name: "Tom", role: "member" },
+  { user: "nav", initial: "N", name: "Nav", role: "owner" },
+  { user: "dante", initial: "D", name: "Dante", role: "member" },
+  { user: "tom", initial: "T", name: "Tom", role: "member" },
 ];
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState<string>(people[0].email);
+  const [user, setUser] = useState<string>(people[0].user);
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -24,7 +24,7 @@ export default function LoginPage() {
     const res = await fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ user, password }),
     });
     const body = await res.json().catch(() => null);
     setBusy(false);
@@ -57,12 +57,12 @@ export default function LoginPage() {
           <p className="kicker">Who&apos;s signing in</p>
           <div className="mt-2 grid grid-cols-3 gap-1.5">
             {people.map((p) => {
-              const active = p.email === email;
+              const active = p.user === user;
               return (
                 <button
-                  key={p.email}
+                  key={p.user}
                   type="button"
-                  onClick={() => setEmail(p.email)}
+                  onClick={() => setUser(p.user)}
                   className={[
                     "flex flex-col items-center gap-1 rounded-lg border px-2 py-2.5 transition-colors",
                     active

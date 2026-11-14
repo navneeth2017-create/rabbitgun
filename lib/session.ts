@@ -41,8 +41,11 @@ export async function getCurrentUser(): Promise<SessionUser | null> {
   return rows[0] ?? null;
 }
 
-export async function login(email: string, password: string): Promise<SessionUser | null> {
+export async function login(handle: string, password: string): Promise<SessionUser | null> {
   await ensureDb();
+  // Log in with a plain username ("nav") — or accept a full email if ever needed.
+  const h = handle.trim().toLowerCase();
+  const email = h.includes("@") ? h : `${h}@rabbitgun.internal`;
   const { rows } = await db().query<{
     id: string;
     email: string;

@@ -32,7 +32,10 @@ const system: Item[] = [
   { href: "/vault", label: "Vault", icon: "vault", count: 148 },
   { href: "/approvals", label: "Approvals", icon: "check" },
   { href: "/brain", label: "Brain", icon: "brain" },
+  { href: "/private", label: "Private", icon: "lock" },
 ];
+
+const ownerOnly: Item[] = [{ href: "/atlas", label: "Atlas", icon: "spark" }];
 
 function NavLink({ item, active }: { item: Item; active: boolean }) {
   return (
@@ -116,6 +119,10 @@ export function Shell({
           {system.map((item) => (
             <NavLink key={item.href} item={item} active={isActive(pathname, item.href)} />
           ))}
+          {(!user || user.role === "owner") &&
+            ownerOnly.map((item) => (
+              <NavLink key={item.href} item={item} active={isActive(pathname, item.href)} />
+            ))}
         </nav>
 
         <div className="mt-auto shrink-0 space-y-2.5 pt-5">
