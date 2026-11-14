@@ -57,7 +57,7 @@ export function ApprovalBar({
                 setStatus("approved");
                 setAt(stamp());
               }}
-              className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-ember px-3 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-[#241207] transition-colors hover:bg-[#f0964f]"
+              className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-ember px-3 py-2 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-[var(--color-on-accent)] transition hover:brightness-110"
             >
               <Icon name="check" className="h-3.5 w-3.5" />
               Approve proof

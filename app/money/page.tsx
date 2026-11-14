@@ -195,7 +195,7 @@ export default async function MoneyPage({
                       className="h-full rounded-full"
                       style={{
                         width: `${(en.net / Math.max(...entities.map((x) => x.net))) * 100}%`,
-                        background: en.net > 20000 ? "#8fae9c" : "#e8873b",
+                        background: en.net > 20000 ? "var(--color-sage)" : "var(--color-ember)",
                       }}
                     />
                   </div>

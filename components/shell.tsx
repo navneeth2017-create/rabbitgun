@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { CommandPalette } from "@/components/command-palette";
 import { Icon, Mark } from "@/components/icons";
+import { ThemeSwitcher } from "@/components/theme-switcher";
+import { portfolio } from "@/lib/portfolio";
 
 type Item = {
   href: string;
@@ -27,6 +29,7 @@ const numbers: Item[] = [
 
 const system: Item[] = [
   { href: "/vault", label: "Vault", icon: "vault", count: 148 },
+  { href: "/approvals", label: "Approvals", icon: "check" },
   { href: "/brain", label: "Brain", icon: "brain" },
 ];
 
@@ -66,19 +69,6 @@ function isActive(pathname: string, href: string) {
 
 export function Shell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
-        e.preventDefault();
-        inputRef.current?.focus();
-        inputRef.current?.select();
-      }
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, []);
 
   return (
     <div className="min-h-screen lg:grid lg:grid-cols-[248px_1fr]">
@@ -124,7 +114,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
               Portfolio
             </span>
             <span className="flex items-baseline gap-1.5 font-mono text-[10px] text-ink">
-              $327,000
+              ${portfolio.revenue.toLocaleString()}
               <span className="text-[9px] text-ok">+11.2%</span>
             </span>
           </div>
@@ -172,20 +162,18 @@ export function Shell({ children }: { children: React.ReactNode }) {
               </span>
             </Link>
 
-            <form action="/brain" className="ml-auto hidden w-full max-w-md items-center gap-2 sm:flex">
-              <label className="flex w-full items-center gap-2 rounded-lg border border-line bg-panel/60 px-2.5 py-1.5 text-[12px] text-soft focus-within:border-line-strong">
-                <Icon name="search" className="h-3.5 w-3.5" />
-                <input
-                  ref={inputRef}
-                  name="q"
-                  placeholder="Search the vault, threads, specs, decisions…"
-                  className="w-full bg-transparent text-ink placeholder:text-soft focus:outline-none"
-                />
-                <span className="font-mono text-[9px] uppercase tracking-wider text-soft">⌘K</span>
-              </label>
-            </form>
+            <button
+              type="button"
+              onClick={() => window.dispatchEvent(new CustomEvent("rabbitgun:palette"))}
+              className="ml-auto hidden w-full max-w-md items-center gap-2 rounded-lg border border-line bg-panel/60 px-2.5 py-1.5 text-left text-[12px] text-soft transition-colors hover:border-line-strong sm:flex"
+            >
+              <Icon name="search" className="h-3.5 w-3.5" />
+              <span className="flex-1 truncate">Search the vault, threads, specs, decisions…</span>
+              <span className="font-mono text-[9px] uppercase tracking-wider text-soft">⌘K</span>
+            </button>
 
             <div className="ml-auto flex items-center gap-3 sm:ml-0">
+              <ThemeSwitcher />
               <span className="hidden rounded-full border border-warn/30 bg-warn/10 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-warn md:inline">
                 sample data
               </span>
@@ -225,6 +213,8 @@ export function Shell({ children }: { children: React.ReactNode }) {
           </div>
         </main>
       </div>
+
+      <CommandPalette />
     </div>
   );
 }

@@ -1,4 +1,4 @@
-type IconName =
+export type IconName =
   | "brief"
   | "packcheck"
   | "vault"
@@ -21,6 +21,7 @@ type IconName =
   | "external"
   | "money"
   | "truck"
+  | "palette"
   | "dot";
 
 const paths: Record<IconName, React.ReactNode> = {
@@ -132,6 +133,15 @@ const paths: Record<IconName, React.ReactNode> = {
       <path d="M13.2 9.6h4.1l3 3.2v3.5h-7.1z" />
       <circle cx="7" cy="18.2" r="1.8" />
       <circle cx="16.8" cy="18.2" r="1.8" />
+    </>
+  ),
+  palette: (
+    <>
+      <path d="M12 3.4c-4.9 0-8.8 3.6-8.8 8.3 0 4.6 3.4 7.9 7.6 7.9 1.3 0 1.9-.8 1.9-1.7 0-1-.7-1.4-.7-2.2 0-.8.7-1.5 1.7-1.5h1.2c2.9 0 5.1-2.1 5.1-4.9 0-3.4-3.4-5.9-8-5.9Z" />
+      <circle cx="7.6" cy="10.2" r="1" fill="currentColor" stroke="none" />
+      <circle cx="11" cy="7.6" r="1" fill="currentColor" stroke="none" />
+      <circle cx="15" cy="9" r="1" fill="currentColor" stroke="none" />
+      <circle cx="16.2" cy="12.6" r="1" fill="currentColor" stroke="none" />
     </>
   ),
   dot: <circle cx="12" cy="12" r="3.2" fill="currentColor" stroke="none" />,

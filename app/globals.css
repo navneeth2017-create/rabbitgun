@@ -12,6 +12,7 @@
   --color-line-strong: rgba(243, 238, 229, 0.24);
   --color-ember: #e8873b;
   --color-ember-deep: #b96529;
+  --color-on-accent: #241207;
   --color-sage: #8fae9c;
   --color-alert: #e2563f;
   --color-warn: #e0a83c;
@@ -25,6 +26,156 @@
   --radius-card: 14px;
 }
 
+/* ------------------------------------------------------------------ skins
+   Every skin redefines the same tokens. Nothing in the app hardcodes a
+   surface colour except the proof sheet, which is evidence and must stay
+   the colour of the paper it represents. */
+
+:root {
+  --glow-a: rgba(232, 135, 59, 0.07);
+  --glow-b: rgba(143, 174, 156, 0.05);
+}
+
+html[data-theme="ember"] {
+  color-scheme: dark;
+  --glow-a: rgba(232, 135, 59, 0.07);
+  --glow-b: rgba(143, 174, 156, 0.05);
+}
+
+html[data-theme="dusk"] {
+  color-scheme: dark;
+  --color-bg: #0d1117;
+  --color-bg-soft: #0f151d;
+  --color-panel: #141b24;
+  --color-panel-2: #1b2430;
+  --color-ink: #e9eef7;
+  --color-muted: #9aa7ba;
+  --color-soft: #6f7d91;
+  --color-line: rgba(233, 238, 247, 0.13);
+  --color-line-strong: rgba(233, 238, 247, 0.24);
+  --color-ember: #7aa2f7;
+  --color-ember-deep: #4f74c9;
+  --color-on-accent: #0b1220;
+  --color-sage: #8fb7a8;
+  --color-alert: #e06c75;
+  --color-warn: #e0b05c;
+  --color-ok: #7fc8a9;
+  --color-info: #9ab8e8;
+  --glow-a: rgba(122, 162, 247, 0.1);
+  --glow-b: rgba(125, 211, 252, 0.05);
+}
+
+html[data-theme="moss"] {
+  color-scheme: dark;
+  --color-bg: #0c120e;
+  --color-bg-soft: #0f1611;
+  --color-panel: #131c16;
+  --color-panel-2: #1a251d;
+  --color-ink: #eef3ea;
+  --color-muted: #a3b0a1;
+  --color-soft: #75836f;
+  --color-line: rgba(238, 243, 234, 0.13);
+  --color-line-strong: rgba(238, 243, 234, 0.24);
+  --color-ember: #a8c66c;
+  --color-ember-deep: #7d9a45;
+  --color-on-accent: #10180a;
+  --color-sage: #8fc7a1;
+  --color-alert: #e0705a;
+  --color-warn: #d9b35c;
+  --color-ok: #8fc7a1;
+  --color-info: #86b8c9;
+  --glow-a: rgba(168, 198, 108, 0.08);
+  --glow-b: rgba(134, 184, 201, 0.05);
+}
+
+html[data-theme="paper"] {
+  color-scheme: light;
+  --color-bg: #f4eee2;
+  --color-bg-soft: #eee6d6;
+  --color-panel: #fbf7ee;
+  --color-panel-2: #e9dfcc;
+  --color-ink: #1e1811;
+  --color-muted: #5b5246;
+  --color-soft: #7c7263;
+  --color-line: rgba(30, 24, 17, 0.14);
+  --color-line-strong: rgba(30, 24, 17, 0.26);
+  --color-ember: #b4531f;
+  --color-ember-deep: #8f3f14;
+  --color-on-accent: #fff8ef;
+  --color-sage: #4f7a63;
+  --color-alert: #b23a2a;
+  --color-warn: #8a5c0a;
+  --color-ok: #2f7a58;
+  --color-info: #356fa8;
+  --glow-a: rgba(180, 83, 31, 0.07);
+  --glow-b: rgba(79, 122, 99, 0.06);
+  --card-shadow: 0 1px 2px rgba(30, 24, 17, 0.05), 0 12px 30px -22px rgba(30, 24, 17, 0.4);
+}
+
+html[data-theme="mono"] {
+  color-scheme: dark;
+  --color-bg: #0a0a0a;
+  --color-bg-soft: #101010;
+  --color-panel: #141414;
+  --color-panel-2: #1c1c1c;
+  --color-ink: #f5f5f2;
+  --color-muted: #a6a6a0;
+  --color-soft: #74746e;
+  --color-line: rgba(245, 245, 242, 0.14);
+  --color-line-strong: rgba(245, 245, 242, 0.26);
+  --color-ember: #f5f5f2;
+  --color-ember-deep: #c8c8c2;
+  --color-on-accent: #0a0a0a;
+  --color-sage: #b9c4b6;
+  --color-alert: #ef7a68;
+  --color-warn: #d9b35c;
+  --color-ok: #9fd3a8;
+  --color-info: #a8bccf;
+  --glow-a: rgba(245, 245, 242, 0.04);
+  --glow-b: rgba(245, 245, 242, 0.02);
+}
+
+/* Lite — same information, quieter surface. Fewer borders, softer accent,
+   more whitespace: for reading the whole business without the noise. */
+html[data-theme="lite"] {
+  color-scheme: light;
+  --color-bg: #f6f5f1;
+  --color-bg-soft: #efeee9;
+  --color-panel: #fdfdfb;
+  --color-panel-2: #f0efe9;
+  --color-ink: #2b2921;
+  --color-muted: #6d6960;
+  --color-soft: #8f8a80;
+  --color-line: rgba(43, 41, 33, 0.08);
+  --color-line-strong: rgba(43, 41, 33, 0.16);
+  --color-ember: #5e7f9b;
+  --color-ember-deep: #47657e;
+  --color-on-accent: #fbfbf9;
+  --color-sage: #7ba08c;
+  --color-alert: #c2604e;
+  --color-warn: #a37b2c;
+  --color-ok: #4f8a68;
+  --color-info: #5a7fae;
+  --glow-a: rgba(94, 127, 155, 0.05);
+  --glow-b: rgba(123, 160, 140, 0.04);
+  --radius-card: 18px;
+  --card-shadow: 0 1px 2px rgba(43, 41, 33, 0.04), 0 14px 40px -24px rgba(43, 41, 33, 0.22);
+}
+
+html[data-theme="lite"] .card,
+html[data-theme="lite"] .card-flat {
+  border-color: transparent;
+}
+
+html[data-theme="lite"] .chip {
+  border-color: transparent;
+  background: rgba(43, 41, 33, 0.045);
+}
+
+html[data-theme="lite"] .kicker {
+  color: var(--color-soft);
+}
+
 @layer base {
   html {
     color-scheme: dark;
@@ -33,15 +184,28 @@
 
   body {
     background:
-      radial-gradient(900px 600px at 78% -10%, rgba(232, 135, 59, 0.07), transparent 60%),
-      radial-gradient(700px 500px at 8% 110%, rgba(143, 174, 156, 0.05), transparent 60%),
+      radial-gradient(900px 600px at 78% -10%, var(--glow-a), transparent 60%),
+      radial-gradient(700px 500px at 8% 110%, var(--glow-b), transparent 60%),
       var(--color-bg);
     color: var(--color-ink);
     font-family: var(--font-sans);
+    transition: color 0.25s ease;
+  }
+
+  body,
+  .card,
+  .card-flat,
+  .chip,
+  aside,
+  header {
+    transition:
+      background-color 0.25s ease,
+      border-color 0.25s ease,
+      color 0.25s ease;
   }
 
   ::selection {
-    background: rgba(232, 135, 59, 0.3);
+    background: color-mix(in srgb, var(--color-ember) 32%, transparent);
   }
 
   :focus-visible {
@@ -56,12 +220,14 @@
     border-radius: var(--radius-card);
     background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 42%),
       var(--color-panel);
+    box-shadow: var(--card-shadow, none);
   }
 
   .card-flat {
     border: 1px solid var(--color-line);
     border-radius: var(--radius-card);
     background: var(--color-panel);
+    box-shadow: var(--card-shadow, none);
   }
 
   .chip {
@@ -140,13 +306,13 @@
     font-family: var(--font-mono);
     font-size: 9px;
     font-weight: 600;
-    color: #14110e;
+    color: var(--color-on-accent);
     background: var(--color-ember);
   }
 
   .scroll-thin {
     scrollbar-width: thin;
-    scrollbar-color: rgba(243, 238, 229, 0.18) transparent;
+    scrollbar-color: var(--color-line-strong) transparent;
   }
 
   .scroll-thin::-webkit-scrollbar {
@@ -155,7 +321,7 @@
   }
 
   .scroll-thin::-webkit-scrollbar-thumb {
-    background: rgba(243, 238, 229, 0.16);
+    background: var(--color-line-strong);
     border-radius: 999px;
   }
 

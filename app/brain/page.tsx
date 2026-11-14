@@ -149,7 +149,7 @@ export default async function BrainPage({
             placeholder="Try: what did we agree with the printer about the 250 g run?"
             className="w-full bg-transparent py-2.5 text-[13px] text-ink placeholder:text-soft focus:outline-none"
           />
-          <button className="rounded-md bg-ember px-3 py-1.5 font-mono text-[9px] font-semibold uppercase tracking-[0.12em] text-[#241207]">
+          <button className="rounded-md bg-ember px-3 py-1.5 font-mono text-[9px] font-semibold uppercase tracking-[0.12em] text-[var(--color-on-accent)]">
             Search
           </button>
         </label>

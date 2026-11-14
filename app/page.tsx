@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Icon } from "@/components/icons";
 import { PageHeader, SectionHead, Sparkline, Stat, Tone } from "@/components/ui";
-import { brief, decisions, revenueSeries, sites, tasks } from "@/lib/demo";
+import { brief, decisions, revenueSeries, tasks } from "@/lib/demo";
 import { entities, portfolio } from "@/lib/portfolio";
 
 export default function BriefPage() {
@@ -89,7 +89,7 @@ export default function BriefPage() {
             </div>
             <p className="max-w-3xl text-[14px] leading-[1.75] text-muted">{brief.paragraph}</p>
             <div className="mt-4 flex flex-wrap gap-2">
-              {["Pulse · 4 sites", "PackCheck · 2 proofs", "Inbox · 6 threads", "Vault · 2 expiries"].map(
+              {["Pulse · 7 sites", "PackCheck · 2 proofs", "Inbox · 6 threads", "Vault · 2 expiries"].map(
                 (s) => (
                   <span key={s} className="chip">
                     {s}
@@ -138,36 +138,44 @@ export default function BriefPage() {
           </section>
 
           <section className="card p-5">
-            <div className="flex items-baseline justify-between">
-              <SectionHead title="DTC stores · last 20 days" />
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <SectionHead title="Sites & storefronts · last 20 days" />
               <span className="font-mono text-[10px] text-ok">+12.4% vs prior 20</span>
             </div>
             <Sparkline data={revenueSeries} className="h-20 w-full" />
             <div className="mt-4 grid gap-2 sm:grid-cols-2">
-              {sites.map((s) => (
-                <div
-                  key={s.name}
-                  className="flex items-center justify-between rounded-lg border border-line/70 bg-bg-soft/40 px-3 py-2"
+              {entities.map((en) => (
+                <Link
+                  key={en.id}
+                  href={`/pulse?e=${en.id}`}
+                  className="flex items-center justify-between rounded-lg border border-line/70 bg-bg-soft/40 px-3 py-2 transition-colors hover:border-line-strong"
                 >
                   <div className="min-w-0">
-                    <p className="truncate font-mono text-[11px] text-ink">{s.name}</p>
-                    <p className="truncate text-[10px] text-soft">{s.note}</p>
+                    <p className="truncate font-mono text-[11px] text-ink">{en.domain}</p>
+                    <p className="truncate text-[10px] text-soft">{en.publicNote}</p>
                   </div>
-                  <div className="ml-3 text-right">
+                  <div className="ml-3 shrink-0 text-right">
                     <p className="tabular font-mono text-[12px] text-ink">
-                      ${s.revenue.toLocaleString()}
+                      ${en.revenue.toLocaleString()}
                     </p>
                     <p
                       className={`tabular font-mono text-[10px] ${
-                        s.delta >= 0 ? "text-ok" : "text-alert"
+                        en.delta >= 0 ? "text-ok" : "text-alert"
                       }`}
                     >
-                      {s.delta >= 0 ? "+" : ""}
-                      {s.delta}%
+                      {en.delta >= 0 ? "+" : ""}
+                      {en.delta}%
                     </p>
                   </div>
-                </div>
+                </Link>
               ))}
+              <Link
+                href="/pulse"
+                className="flex items-center justify-center gap-1.5 rounded-lg border border-dashed border-line px-3 py-2 font-mono text-[9px] uppercase tracking-[0.1em] text-soft transition-colors hover:border-line-strong hover:text-ember"
+              >
+                All {entities.length} sites · Pulse
+                <Icon name="arrow" className="h-3 w-3" />
+              </Link>
             </div>
           </section>
         </div>

@@ -12,7 +12,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
@@ -21,6 +21,12 @@ export default function RootLayout({
           rel="stylesheet"
         />
         <meta name="theme-color" content="#14110e" />
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              '(function(){try{var ok=["ember","dusk","moss","paper","mono","lite"];var t=new URLSearchParams(location.search).get("theme")||localStorage.getItem("rabbitgun.theme");if(t&&ok.indexOf(t)>-1)document.documentElement.dataset.theme=t;}catch(e){}})();',
+          }}
+        />
       </head>
       <body>
         <Shell>{children}</Shell>

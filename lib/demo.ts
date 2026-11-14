@@ -498,13 +498,6 @@ export const threads: Thread[] = [
   },
 ];
 
-export const sites = [
-  { name: "hellagoodenergy.com", revenue: 71240, delta: 18.2, orders: 1284, conv: 3.9, note: "Best week since launch" },
-  { name: "bornagainkratom.com", revenue: 58910, delta: -9.1, orders: 902, conv: 2.6, note: "Refunds up 4.1% · 1 SKU out of stock" },
-  { name: "rawcoffeepowder.com", revenue: 31660, delta: 4.4, orders: 611, conv: 3.1, note: "Steady" },
-  { name: "wgcpaddy.com", revenue: 22510, delta: -1.8, orders: 388, conv: 2.9, note: "Ad spend flat, traffic down 6%" },
-];
-
 export const revenueSeries = [
   18, 22, 19, 26, 24, 31, 29, 34, 38, 33, 41, 44, 39, 47, 52, 49, 56, 58, 54, 61,
 ];

@@ -1,10 +1,12 @@
-export type EntityKind = "DTC" | "DSD" | "Services" | "Product";
+export type EntityKind = "DTC" | "DSD" | "Services" | "Product" | "Wholesale";
 
 export type Entity = {
   id: string;
   name: string;
   kind: EntityKind;
   domain: string;
+  /** One line pulled from the live site — the public proof, not the P&L. */
+  publicNote: string;
   revenue: number;
   delta: number;
   orders: number;
@@ -26,6 +28,7 @@ export const entities: Entity[] = [
     name: "Addy DSD",
     kind: "DSD",
     domain: "addydsd.com",
+    publicNote: "Store portal · ordering, routing + the profit tab",
     revenue: 96480,
     delta: 6.2,
     orders: 318,
@@ -45,6 +48,7 @@ export const entities: Entity[] = [
     name: "Hella Good Energy",
     kind: "DTC",
     domain: "hellagoodenergy.com",
+    publicNote: "3 flavors · $5.99/pack · 125 mg RCF caffeine",
     revenue: 71240,
     delta: 18.2,
     orders: 1284,
@@ -64,6 +68,7 @@ export const entities: Entity[] = [
     name: "Born Again Kratom",
     kind: "DTC",
     domain: "bornagainkratom.com",
+    publicNote: "Whole leaf · no extracts · no 7-OH",
     revenue: 58910,
     delta: -9.1,
     orders: 902,
@@ -83,6 +88,7 @@ export const entities: Entity[] = [
     name: "Monarch Technologies",
     kind: "Services",
     domain: "monarchtechusa.com",
+    publicNote: "CRM, private AI + custom systems for operators",
     revenue: 42000,
     delta: 9.8,
     orders: 26,
@@ -102,6 +108,7 @@ export const entities: Entity[] = [
     name: "Raw Coffee Fiber",
     kind: "DTC",
     domain: "rawcoffeefiber.com",
+    publicNote: "RCF caffeine · gradual release over 7 hours",
     revenue: 31660,
     delta: 4.4,
     orders: 611,
@@ -121,6 +128,7 @@ export const entities: Entity[] = [
     name: "WGC Paddy",
     kind: "DTC",
     domain: "wgcpaddy.com",
+    publicNote: "Focus supplement · no prescription",
     revenue: 22510,
     delta: -1.8,
     orders: 388,
@@ -137,9 +145,10 @@ export const entities: Entity[] = [
   },
   {
     id: "wowcow",
-    name: "WowCow",
-    kind: "Product",
-    domain: "wowcow.app",
+    name: "WowCow Distributors",
+    kind: "Wholesale",
+    domain: "wowcowdistributors.com",
+    publicNote: "2× keystone · 90-day money-back · 24h approval",
     revenue: 4200,
     delta: 22.0,
     orders: 84,
@@ -236,7 +245,7 @@ export const leaks: Leak[] = [
   },
   {
     id: "l4",
-    entity: "WowCow",
+    entity: "WowCow Distributors",
     title: "Processing rate never renegotiated",
     detail:
       "Still on 2.9% + 30¢ from launch. Volume now qualifies for 2.4%. Difference on the current run rate is $210/month.",
