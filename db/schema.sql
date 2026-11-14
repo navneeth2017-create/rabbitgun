@@ -42,7 +42,7 @@ create index on audit_log (at desc);
 create table entities (
   id         text primary key,          -- addy, hellagood, monarch…
   name       text not null,
-  kind       text not null check (kind in ('DTC','DSD','Services','Product')),
+  kind       text not null check (kind in ('DTC','DSD','Services','Product','Wholesale')),
   domain     text,
   active     boolean not null default true
 );

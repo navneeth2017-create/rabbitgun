@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import "./globals.css";
-import { Shell } from "@/components/shell";
 
 export const metadata: Metadata = {
   title: "Rabbitgun",
@@ -21,15 +21,17 @@ export default function RootLayout({
           rel="stylesheet"
         />
         <meta name="theme-color" content="#14110e" />
-        <script
+      </head>
+      <body>
+        <Script
+          id="rg-theme"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html:
               '(function(){try{var ok=["ember","dusk","moss","paper","mono","lite"];var t=new URLSearchParams(location.search).get("theme")||localStorage.getItem("rabbitgun.theme");if(t&&ok.indexOf(t)>-1)document.documentElement.dataset.theme=t;}catch(e){}})();',
           }}
         />
-      </head>
-      <body>
-        <Shell>{children}</Shell>
+        {children}
       </body>
     </html>
   );

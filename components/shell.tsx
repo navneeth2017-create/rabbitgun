@@ -67,7 +67,13 @@ function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(href + "/");
 }
 
-export function Shell({ children }: { children: React.ReactNode }) {
+export function Shell({
+  children,
+  user,
+}: {
+  children: React.ReactNode;
+  user?: { name: string; role: string } | null;
+}) {
   const pathname = usePathname();
 
   return (
@@ -142,13 +148,36 @@ export function Shell({ children }: { children: React.ReactNode }) {
               <span
                 key={p.i}
                 title={p.name}
-                className="grid h-7 w-7 place-items-center rounded-full border border-line bg-panel-2 font-mono text-[10px] text-muted"
+                className={[
+                  "grid h-7 w-7 place-items-center rounded-full border font-mono text-[10px]",
+                  user?.name === p.name
+                    ? "border-ember/50 bg-ember/15 text-ember"
+                    : "border-line bg-panel-2 text-muted",
+                ].join(" ")}
               >
                 {p.i}
               </span>
             ))}
             <span className="ml-auto font-mono text-[9px] text-soft">v0.1</span>
           </div>
+
+          {user ? (
+            <form action="/api/auth/logout" method="post" className="flex items-center justify-between px-1 pt-1">
+              <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-muted">
+                {user.name} · {user.role}
+              </span>
+              <button
+                type="submit"
+                className="font-mono text-[9px] uppercase tracking-[0.12em] text-soft transition-colors hover:text-ember"
+              >
+                sign out
+              </button>
+            </form>
+          ) : (
+            <p className="px-1 pt-1 text-center font-mono text-[9px] uppercase tracking-[0.12em] text-soft">
+              preview · auth off
+            </p>
+          )}
         </div>
       </aside>
 

@@ -36,14 +36,21 @@ npm install
 npm run dev          # http://localhost:3000
 ```
 
-Sample data renders on every screen. No database required for the UI.
+Sample data renders on every screen. No database required for the UI — with no `DATABASE_URL`, the app runs in **preview mode**: everything visible, no login, and the sidebar says so.
 
-When you wire the real thing:
+When a `DATABASE_URL` exists, **auth switches on automatically**: every room sits behind login (Nav, Dante, Tom only), sessions are DB-backed and revocable, and the sidebar shows who is signed in.
+
+### Going live (Railway or local Postgres)
+
+1. Point `DATABASE_URL` at a Postgres 16 (+ pgvector) database.
+2. Give the three humans passwords: set `NAV_PASSWORD`, `DANTE_PASSWORD`, `TOM_PASSWORD` (or one `RABBITGUN_INITIAL_PASSWORD` for all three).
+3. Restart. On first use the app creates the core tables and seeds the users + the 7 entities itself — no manual SQL needed.
+
+Manual alternative for local work:
 
 ```bash
-createdb rabbitgun
-psql rabbitgun -f db/schema.sql
-cp .env.example .env
+psql "$DATABASE_URL" -f db/schema.sql   # full canonical schema
+node db/seed-users.mjs                  # or let the app bootstrap itself
 ```
 
 The jobs worker, migrations runner, and connectors land with slice 1 — the schema and the `jobs` table are already shaped for them. Nothing in this repo writes to a live system yet.
@@ -72,11 +79,17 @@ The top bar is a real search form; `/brain?q=` actually filters the demo corpus.
 ## Layout
 
 ```
-app/                 routes (server components)
+app/(dash)/          every room (behind login when a DB exists)
+app/login/           the gate
+app/api/auth/        login + logout
 components/          shell, icons, proof sheet, approval, entity tabs
+lib/db.ts            Postgres pool
+lib/session.ts       DB-backed sessions (bcrypt + httpOnly cookie)
+lib/bootstrap.ts     idempotent tables + seed on first use
 lib/demo.ts          sample proofs, docs, threads, tasks, decisions
 lib/portfolio.ts     entities, money flow, leaks, freight, cash
 db/schema.sql        Postgres + pgvector, append-only where it matters
+db/seed-users.mjs    manual seed (the app also self-seeds)
 app/api/jarvis/      read-only feed for the in-home Jarvis
 ```
 
