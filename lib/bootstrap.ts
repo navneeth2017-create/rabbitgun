@@ -200,10 +200,38 @@ async function init() {
       chunk      text not null,
       tags       text[] not null default '{}',
       embedding  vector(384),
+      weight     float8 not null default 1,
+      archived   boolean not null default false,
       created_at timestamptz not null default now()
     )
   `);
   await pool.query(`create index if not exists knowledge_tags on knowledge using gin (tags)`);
+
+  // ---- self-improvement: human corrections + dream reconciliation ----------
+  await pool.query(`
+    create table if not exists corrections (
+      id            uuid primary key default gen_random_uuid(),
+      user_id       uuid references users(id),
+      hit_title     text not null,
+      hit_source    text,
+      corrected_text text not null,
+      note          text,
+      created_at    timestamptz not null default now(),
+      applied_at    timestamptz
+    )
+  `);
+
+  await pool.query(`
+    create table if not exists dream_reports (
+      id         bigserial primary key,
+      at         timestamptz not null default now(),
+      scanned    integer not null default 0,
+      merged     integer not null default 0,
+      archived   integer not null default 0,
+      fixed      integer not null default 0,
+      summary    text
+    )
+  `);
 
   // ---- seed: entities -----------------------------------------------------
   for (const [id, name, kind, domain] of entities) {

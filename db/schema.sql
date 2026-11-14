@@ -262,6 +262,42 @@ create table drafts (
   sent_at     timestamptz
 );
 
+-- The brain: embedded knowledge (local MiniLM, vector 384).
+create table knowledge (
+  id         bigserial primary key,
+  source     text not null,
+  title      text not null,
+  chunk      text not null,
+  tags       text[] not null default '{}',
+  embedding  vector(384),
+  weight     float8 not null default 1,   -- corrections weigh more than originals
+  archived   boolean not null default false,
+  created_at timestamptz not null default now()
+);
+create index on knowledge using gin (tags);
+
+-- Self-improvement: human corrections, and dream reconciliation reports.
+create table corrections (
+  id            uuid primary key default gen_random_uuid(),
+  user_id       uuid references users(id),
+  hit_title     text not null,
+  hit_source    text,
+  corrected_text text not null,
+  note          text,
+  created_at    timestamptz not null default now(),
+  applied_at    timestamptz
+);
+
+create table dream_reports (
+  id      bigserial primary key,
+  at      timestamptz not null default now(),
+  scanned integer not null default 0,
+  merged  integer not null default 0,
+  archived integer not null default 0,
+  fixed   integer not null default 0,
+  summary text
+);
+
 -- ---------------------------------------------------------------- private rooms
 
 -- Each person's private vault. Visibility is enforced in queries, not promises:

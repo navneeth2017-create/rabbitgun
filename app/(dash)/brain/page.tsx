@@ -3,6 +3,7 @@ import { Icon } from "@/components/icons";
 import { PageHeader, SectionHead } from "@/components/ui";
 import { authEnabled } from "@/lib/session";
 import { searchKnowledge, type BrainHit } from "@/lib/brain";
+import { correctBrainAction } from "./actions";
 import { decisions, docs, proofs, threads } from "@/lib/demo";
 import { entities } from "@/lib/portfolio";
 
@@ -121,15 +122,14 @@ const suggestions = [
 export default async function BrainPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string }>;
+  searchParams: Promise<{ q?: string; fixed?: string }>;
 }) {
-  const { q } = await searchParams;
+  const { q, fixed } = await searchParams;
   const query = (q ?? "").trim();
   const authOn = authEnabled();
   const kbHits: BrainHit[] | null = authOn && query ? await searchKnowledge(query) : null;
   const hits = authOn ? [] : search(query);
   const groups = Array.from(new Set(hits.map((h) => h.group)));
-
   return (
     <>
       <PageHeader
@@ -161,6 +161,12 @@ export default async function BrainPage({
 
       {kbHits && (
         <section className="mt-4">
+          {fixed && (
+            <p className="mb-3 rounded-lg border border-ok/35 bg-ok/10 px-3.5 py-2.5 text-[12px] text-ink">
+              Corrected. The brain is smarter than it was a minute ago — your version now outweighs
+              the old one, and it stays corrected every time this question is asked.
+            </p>
+          )}
           <div className="mb-2 flex flex-wrap items-center gap-2">
             <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-soft">
               {kbHits.length} {kbHits.length === 1 ? "source" : "sources"} for
@@ -190,6 +196,33 @@ export default async function BrainPage({
                     )}
                   </div>
                   <p className="mt-1.5 text-[12.5px] leading-relaxed text-muted">{h.text}</p>
+                  {h.source !== "correction" && (
+                    <details className="mt-2">
+                      <summary className="cursor-pointer list-none font-mono text-[9px] uppercase tracking-[0.14em] text-soft transition-colors hover:text-ember">
+                        wrong? correct it — the brain learns
+                      </summary>
+                      <form action={correctBrainAction} className="mt-2 grid gap-2 rounded-lg border border-line bg-bg-soft/40 p-3">
+                        <input type="hidden" name="hitTitle" value={h.title} />
+                        <input type="hidden" name="hitSource" value={h.source} />
+                        <input type="hidden" name="q" value={query} />
+                        <textarea
+                          name="correctedText"
+                          required
+                          rows={3}
+                          placeholder="Say it right: 'That's wrong — it's actually…'"
+                          className="w-full rounded-lg border border-line bg-bg/60 px-3 py-2 text-[12.5px] text-ink placeholder:text-soft focus:border-line-strong focus:outline-none"
+                        />
+                        <div className="flex items-center justify-between gap-3">
+                          <span className="font-mono text-[8.5px] uppercase tracking-[0.12em] text-soft">
+                            recorded with your name · outweighs the old fact · stays corrected
+                          </span>
+                          <button type="submit" className="rounded-lg bg-ember px-3.5 py-2 font-mono text-[9px] font-semibold uppercase tracking-[0.14em] text-[var(--color-on-accent)] transition hover:brightness-110">
+                            Teach it
+                          </button>
+                        </div>
+                      </form>
+                    </details>
+                  )}
                 </article>
               ))}
             </div>

@@ -59,22 +59,28 @@ export async function searchKnowledge(query: string): Promise<BrainHit[]> {
 
   try {
     const vec = await embed(q);
-    const { rows } = await db().query<BrainHit>(
+    const { rows } = await db().query<{ source: string; title: string; text: string; tags: string[]; raw: number; weight: number }>(
       `select source, title, chunk as text, tags,
-              1 - (embedding <=> $1::vector) as score
+              1 - (embedding <=> $1::vector) as raw,
+              weight
          from knowledge
+        where archived = false
         order by embedding <=> $1::vector
         limit 8`,
       [`[${vec.join(",")}]`],
     );
-    return rows.filter((r) => r.score > 0.25);
+    // Corrections carry extra weight — the fix outranks the fact it fixed.
+    return rows
+      .map((r) => ({ source: r.source, title: r.title, text: r.text, tags: r.tags, score: r.raw * r.weight }))
+      .filter((r) => r.score > 0.25);
   } catch {
     // No local embeddings (model not downloaded / no network) — text fallback.
     const { rows } = await db().query<BrainHit>(
       `select source, title, chunk as text, tags, 0::float8 as score
          from knowledge
-        where chunk ilike '%' || $1 || '%' or title ilike '%' || $1 || '%'
-        order by id
+        where archived = false
+          and (chunk ilike '%' || $1 || '%' or title ilike '%' || $1 || '%')
+        order by weight desc, id
         limit 8`,
       [q.replace(/[%_]/g, "")],
     );
