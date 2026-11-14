@@ -26,6 +26,21 @@ const people = [
   { email: "tom@rabbitgun.internal", name: "Tom", role: "member", env: "TOM_PASSWORD" },
 ] as const;
 
+/**
+ * Placeholder passwords so the three humans can get in on day one and change
+ * them later. They are deliberately obvious, and the dashboard nags until
+ * real passwords arrive via env (NAV_PASSWORD / DANTE_PASSWORD / TOM_PASSWORD
+ * or RABBITGUN_INITIAL_PASSWORD).
+ */
+const FALLBACK_PASSWORDS: Record<string, string> = {
+  NAV_PASSWORD: "changeme-nav",
+  DANTE_PASSWORD: "changeme-dante",
+  TOM_PASSWORD: "changeme-tom",
+};
+
+let usedFallback = false;
+export const usingDefaultPasswords = () => usedFallback;
+
 const entities: [string, string, string, string][] = [
   ["addy", "Addy DSD", "DSD", "addydsd.com"],
   ["hellagood", "Hella Good Energy", "DTC", "hellagoodenergy.com"],
@@ -95,16 +110,61 @@ async function init() {
 
   // ---- seed: people -------------------------------------------------------
   for (const p of people) {
-    const password = process.env[p.env] || process.env.RABBITGUN_INITIAL_PASSWORD;
-    if (!password) continue;
+    const fromEnv = process.env[p.env] || process.env.RABBITGUN_INITIAL_PASSWORD;
+    const password = fromEnv || FALLBACK_PASSWORDS[p.env];
+    if (!fromEnv) usedFallback = true;
     await pool.query(
       `insert into users (email, name, role, password_hash)
        values ($1, $2, $3, $4)
        on conflict (email) do update
-         set password_hash = excluded.password_hash, name = excluded.name, role = excluded.role`,
+         set password_hash = excluded.password_hash, name = excluded.name, role = excluded.role
+       where users.password_hash is distinct from excluded.password_hash
+          or users.name is distinct from excluded.name
+          or users.role is distinct from excluded.role`,
       [p.email, p.name, p.role, bcrypt.hashSync(password, 12)],
     );
   }
+
+  // ---- vendors + skus + spec_versions (the PackCheck spine) ----------------
+  await pool.query(`
+    create table if not exists vendors (
+      id           uuid primary key default gen_random_uuid(),
+      name         text not null,
+      kind         text not null default 'printer',
+      contact_name text,
+      contact_email text,
+      terms        text,
+      active       boolean not null default true
+    )
+  `);
+
+  await pool.query(`
+    create table if not exists skus (
+      id        uuid primary key default gen_random_uuid(),
+      entity_id text not null references entities(id) on delete cascade,
+      code      text not null,
+      name      text not null,
+      gtin      text,
+      unique (entity_id, code)
+    )
+  `);
+
+  await pool.query(`
+    create table if not exists spec_versions (
+      id            uuid primary key default gen_random_uuid(),
+      sku_id        uuid not null references skus(id) on delete cascade,
+      version       integer not null,
+      approved_copy jsonb not null,
+      dims          jsonb,
+      required_text text[],
+      spot_colors   text[],
+      created_at    timestamptz not null default now(),
+      locked_by     uuid references users(id),
+      locked_at     timestamptz,
+      supersedes    uuid references spec_versions(id),
+      unique (sku_id, version)
+    )
+  `);
 
   // ---- seed: entities -----------------------------------------------------
   for (const [id, name, kind, domain] of entities) {

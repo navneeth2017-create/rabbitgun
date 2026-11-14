@@ -20,6 +20,7 @@ type Item = {
 const pages: { label: string; hint: string; href: string; icon: IconName }[] = [
   { label: "Brief", hint: "the morning read", href: "/", icon: "brief" },
   { label: "PackCheck", hint: "proofs and findings", href: "/packcheck", icon: "packcheck" },
+  { label: "Specs", hint: "the locked truth the gate checks against", href: "/specs", icon: "file" },
   { label: "Inbox", hint: "threads that move money", href: "/inbox", icon: "inbox" },
   { label: "Runbook", hint: "obligations and owners", href: "/runbook", icon: "runbook" },
   { label: "Vault", hint: "every document", href: "/vault", icon: "vault" },

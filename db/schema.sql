@@ -118,6 +118,7 @@ create table spec_versions (
   dims         jsonb,                           -- trim, bleed, safe, dieline id/version
   required_text text[],                         -- warning, allergen, origin…
   spot_colors  text[],
+  created_at   timestamptz not null default now(),
   substantiation_doc_id uuid,                   -- claims need a source
   locked_by    uuid references users(id),
   locked_at    timestamptz,

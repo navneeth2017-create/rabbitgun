@@ -17,6 +17,7 @@ type Item = {
 const primary: Item[] = [
   { href: "/", label: "Brief", icon: "brief" },
   { href: "/packcheck", label: "PackCheck", icon: "packcheck", count: 2 },
+  { href: "/specs", label: "Specs", icon: "file" },
   { href: "/inbox", label: "Inbox", icon: "inbox", count: 4 },
   { href: "/runbook", label: "Runbook", icon: "runbook", count: 3 },
 ];
@@ -70,9 +71,12 @@ function isActive(pathname: string, href: string) {
 export function Shell({
   children,
   user,
+  defaultAuth,
 }: {
   children: React.ReactNode;
   user?: { name: string; role: string } | null;
+  /** Seeded with the placeholder passwords — nag until real ones land. */
+  defaultAuth?: boolean;
 }) {
   const pathname = usePathname();
 
@@ -162,17 +166,29 @@ export function Shell({
           </div>
 
           {user ? (
-            <form action="/api/auth/logout" method="post" className="flex items-center justify-between px-1 pt-1">
-              <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-muted">
-                {user.name} · {user.role}
-              </span>
-              <button
-                type="submit"
-                className="font-mono text-[9px] uppercase tracking-[0.12em] text-soft transition-colors hover:text-ember"
-              >
-                sign out
-              </button>
-            </form>
+            <>
+              {defaultAuth && (
+                <div className="mx-1 mb-1.5 flex items-center gap-2 rounded-lg border border-alert/35 bg-alert/10 px-2.5 py-2">
+                  <span className="text-alert">
+                    <Icon name="alert" className="h-3.5 w-3.5 shrink-0" />
+                  </span>
+                  <span className="text-[10.5px] leading-snug text-ink">
+                    Placeholder passwords in use — set <span className="font-mono text-[9px]">*_PASSWORD</span> and they&apos;re gone.
+                  </span>
+                </div>
+              )}
+              <form action="/api/auth/logout" method="post" className="flex items-center justify-between px-1 pt-1">
+                <span className="font-mono text-[9px] uppercase tracking-[0.12em] text-muted">
+                  {user.name} · {user.role}
+                </span>
+                <button
+                  type="submit"
+                  className="font-mono text-[9px] uppercase tracking-[0.12em] text-soft transition-colors hover:text-ember"
+                >
+                  sign out
+                </button>
+              </form>
+            </>
           ) : (
             <p className="px-1 pt-1 text-center font-mono text-[9px] uppercase tracking-[0.12em] text-soft">
               preview · auth off

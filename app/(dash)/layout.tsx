@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { Shell } from "@/components/shell";
 import { authEnabled, getCurrentUser } from "@/lib/session";
+import { usingDefaultPasswords } from "@/lib/bootstrap";
 
 /**
  * Every room lives in this group. When a database is configured, the gate
@@ -11,5 +12,5 @@ export default async function DashLayout({ children }: { children: React.ReactNo
   const user = authEnabled() ? await getCurrentUser() : null;
   if (authEnabled() && !user) redirect("/login");
 
-  return <Shell user={user}>{children}</Shell>;
+  return <Shell user={user} defaultAuth={Boolean(user) && usingDefaultPasswords()}>{children}</Shell>;
 }
