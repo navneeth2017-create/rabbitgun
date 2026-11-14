@@ -2,6 +2,9 @@
   "name": "rabbitgun",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=20.9.0 <25"
+  },
   "description": "Rabbitgun — the private dashboard for Monarch operations. Files, vendors, stores, money, and the AI checks that keep them honest.",
   "scripts": {
     "dev": "next dev",
