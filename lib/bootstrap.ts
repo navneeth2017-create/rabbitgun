@@ -191,6 +191,20 @@ async function init() {
   `);
   await pool.query(`create index if not exists ai_chats_user on ai_chats (user_id, at desc)`);
 
+  // ---- the brain: embedded knowledge (local MiniLM, vector 384) ------------
+  await pool.query(`
+    create table if not exists knowledge (
+      id         bigserial primary key,
+      source     text not null,
+      title      text not null,
+      chunk      text not null,
+      tags       text[] not null default '{}',
+      embedding  vector(384),
+      created_at timestamptz not null default now()
+    )
+  `);
+  await pool.query(`create index if not exists knowledge_tags on knowledge using gin (tags)`);
+
   // ---- seed: entities -----------------------------------------------------
   for (const [id, name, kind, domain] of entities) {
     await pool.query(

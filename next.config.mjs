@@ -7,6 +7,8 @@ const nextConfig = {
   experimental: {
     serverActions: { bodySizeLimit: "25mb" },
   },
+  // onnxruntime ships native binaries — keep them out of the bundler.
+  serverExternalPackages: ["@xenova/transformers", "onnxruntime-node"],
 };
 
 export default nextConfig;

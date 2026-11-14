@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Icon } from "@/components/icons";
 import { PageHeader, SectionHead } from "@/components/ui";
+import { authEnabled } from "@/lib/session";
+import { searchKnowledge, type BrainHit } from "@/lib/brain";
 import { decisions, docs, proofs, threads } from "@/lib/demo";
 import { entities } from "@/lib/portfolio";
 
@@ -123,7 +125,9 @@ export default async function BrainPage({
 }) {
   const { q } = await searchParams;
   const query = (q ?? "").trim();
-  const hits = search(query);
+  const authOn = authEnabled();
+  const kbHits: BrainHit[] | null = authOn && query ? await searchKnowledge(query) : null;
+  const hits = authOn ? [] : search(query);
   const groups = Array.from(new Set(hits.map((h) => h.group)));
 
   return (
@@ -154,6 +158,47 @@ export default async function BrainPage({
           </button>
         </label>
       </form>
+
+      {kbHits && (
+        <section className="mt-4">
+          <div className="mb-2 flex flex-wrap items-center gap-2">
+            <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-soft">
+              {kbHits.length} {kbHits.length === 1 ? "source" : "sources"} for
+            </span>
+            <span className="font-mono text-[11px] text-ink">“{query}”</span>
+            <Link href="/brain" className="ml-auto font-mono text-[9px] uppercase tracking-[0.1em] text-soft hover:text-ember">
+              Clear
+            </Link>
+          </div>
+          {kbHits.length === 0 ? (
+            <p className="card px-4 py-6 text-center text-[13px] text-muted">
+              Nothing in the index supports that yet. What gets saved becomes knowable.
+            </p>
+          ) : (
+            <div className="grid gap-2">
+              {kbHits.map((h, i) => (
+                <article key={i} className="card px-4 py-3.5">
+                  <div className="flex flex-wrap items-baseline gap-2">
+                    <span className="rounded-full border border-ember/40 px-2 py-0.5 font-mono text-[8.5px] uppercase tracking-[0.12em] text-ember">
+                      {h.source}
+                    </span>
+                    <h3 className="text-[13.5px] text-ink">{h.title}</h3>
+                    {h.score > 0 && (
+                      <span className="ml-auto font-mono text-[9px] text-soft">
+                        {(h.score * 100).toFixed(0)}% match
+                      </span>
+                    )}
+                  </div>
+                  <p className="mt-1.5 text-[12.5px] leading-relaxed text-muted">{h.text}</p>
+                </article>
+              ))}
+            </div>
+          )}
+          <p className="mt-2 font-mono text-[9px] uppercase tracking-[0.12em] text-soft">
+            jarvis searches the same index at /api/jarvis/search — one truth, both doors
+          </p>
+        </section>
+      )}
 
       {!query && (
         <>
@@ -237,7 +282,7 @@ export default async function BrainPage({
         </>
       )}
 
-      {query && (
+      {query && !authOn && (
         <div className="mt-4">
           <div className="mb-3 flex flex-wrap items-center gap-2">
             <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-soft">

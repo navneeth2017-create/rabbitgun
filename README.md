@@ -90,7 +90,7 @@ lib/demo.ts          sample proofs, docs, threads, tasks, decisions
 lib/portfolio.ts     entities, money flow, leaks, freight, cash
 db/schema.sql        Postgres + pgvector, append-only where it matters
 db/seed-users.mjs    manual seed (the app also self-seeds)
-app/api/jarvis/      read-only feed for the in-home Jarvis
+app/api/jarvis/      read-only feed for the in-home Jarvis (/brief for numbers, /search for the trained knowledge index)
 ```
 
 ---
