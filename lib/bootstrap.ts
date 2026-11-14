@@ -192,20 +192,26 @@ async function init() {
   await pool.query(`create index if not exists ai_chats_user on ai_chats (user_id, at desc)`);
 
   // ---- the brain: embedded knowledge (local MiniLM, vector 384) ------------
-  await pool.query(`
-    create table if not exists knowledge (
-      id         bigserial primary key,
-      source     text not null,
-      title      text not null,
-      chunk      text not null,
-      tags       text[] not null default '{}',
-      embedding  vector(384),
-      weight     float8 not null default 1,
-      archived   boolean not null default false,
-      created_at timestamptz not null default now()
-    )
-  `);
-  await pool.query(`create index if not exists knowledge_tags on knowledge using gin (tags)`);
+  // pgvector is optional: without it everything else still works and the
+  // brain falls back to text matching.
+  try {
+    await pool.query(`
+      create table if not exists knowledge (
+        id         bigserial primary key,
+        source     text not null,
+        title      text not null,
+        chunk      text not null,
+        tags       text[] not null default '{}',
+        embedding  vector(384),
+        weight     float8 not null default 1,
+        archived   boolean not null default false,
+        created_at timestamptz not null default now()
+      )
+    `);
+    await pool.query(`create index if not exists knowledge_tags on knowledge using gin (tags)`);
+  } catch (err) {
+    console.warn("[bootstrap] knowledge index unavailable (no pgvector) — brain runs in text mode:", (err as Error).message);
+  }
 
   // ---- self-improvement: human corrections + dream reconciliation ----------
   await pool.query(`

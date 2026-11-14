@@ -10,9 +10,9 @@ import { ensureKnowledge } from "@/lib/brain";
  *    cosine > 0.93) and archives the stale copy — the corrected/later one wins.
  * 3. Writes a dream report so the improvement is visible, not vibes.
  *
- * Mechanical today; when the Anthropic key is wired the same pass gets a
- * Claude step that rewrites drifted entries into clean, consolidated text
- * before the sweep. The slot is the runDream call — nothing else changes.
+ * Runs entirely on the home box — Rabbitgun is the in-home AI, so the
+ * reconciliation is mechanical here; a local generation model (never a
+ * hosted one) slots into the marked step when we wire one next to MiniLM.
  */
 
 export type DreamResult = {

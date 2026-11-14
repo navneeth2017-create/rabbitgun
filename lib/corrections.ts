@@ -30,25 +30,35 @@ export async function saveCorrection(
   await ensureDb();
 
   const { rows } = await db().query<{ id: string }>(
-    `insert into corrections (user_id, hit_title, hit_source, corrected_text, applied_at)
-     values ($1, $2, $3, $4, now()) returning id`,
+    `insert into corrections (user_id, hit_title, hit_source, corrected_text)
+     values ($1, $2, $3, $4) returning id`,
     [user.id, hitTitle.trim(), hitSource, correctedText.trim()],
   );
 
   // The correction becomes knowledge immediately, and it outweighs the
   // entry it fixed. Same question → corrected answer, from now on.
-  const vec = await embed(correctedText);
-  await db().query(
-    `insert into knowledge (source, title, chunk, tags, embedding, weight)
-     values ($1, $2, $3, $4, $5, 1.5)`,
-    [
-      "correction",
-      `Correction — ${hitTitle.trim()}`,
-      correctedText.trim(),
-      ["correction", hitSource].filter(Boolean),
-      `[${vec.join(",")}]`,
-    ],
-  );
+  // If the embedding step can't run (no local model), the correction is
+  // still recorded — it just stays un-applied until the brain can take it.
+  try {
+    const vec = await embed(correctedText);
+    await db().query(
+      `insert into knowledge (source, title, chunk, tags, embedding, weight)
+       values ($1, $2, $3, $4, $5, 1.5)`,
+      [
+        "correction",
+        `Correction — ${hitTitle.trim()}`,
+        correctedText.trim(),
+        ["correction", hitSource].filter(Boolean),
+        `[${vec.join(",")}]`,
+      ],
+    );
+    await db().query(
+      `update corrections set applied_at = now() where id = $1`,
+      [rows[0].id],
+    );
+  } catch (err) {
+    console.warn("[corrections] recorded but not yet embedded:", (err as Error).message);
+  }
 
   await db().query(
     `insert into audit_log (user_id, action, subject, meta) values ($1, 'correction', $2, $3)`,

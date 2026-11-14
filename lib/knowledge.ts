@@ -44,9 +44,9 @@ export const knowledgeBase: KnowledgeEntry[] = [
   },
   {
     source: "rules",
-    title: "Business data never touches free models",
-    text: "No business data — documents, numbers, notes — goes through free-tier AI models because of retention and training risk. Embeddings run locally with MiniLM on the home box. Any hosted LLM call is paid and zero-retention only.",
-    tags: ["rules", "ai", "privacy"],
+    title: "No hosted AI. Ever.",
+    text: "Rabbitgun is the in-home AI and it stays that way. No business data — documents, numbers, notes, embeddings — is ever sent to any hosted AI service, including Anthropic or any free-tier model. Embeddings run locally with MiniLM on the home box, and any language-model generation happens on the home box too. The rule is absolute: nothing about the business leaves the hardware we own.",
+    tags: ["rules", "ai", "privacy", "core"],
   },
   {
     source: "rules",

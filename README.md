@@ -40,6 +40,8 @@ Sample data renders on every screen. No database required for the UI — with no
 
 When a `DATABASE_URL` exists, **auth switches on automatically**: every room sits behind login (Nav, Dante, Tom only), sessions are DB-backed and revocable, and the sidebar shows who is signed in.
 
+**Model policy: Rabbitgun is the in-home AI.** No Anthropic key, no hosted LLM, no free-tier model — embeddings (MiniLM) and any generation run locally on the home box. Business data never leaves hardware we own. The separate Monarch Preflight product backend may make its own model choices; it is not this service.
+
 ### Going live (Railway or local Postgres)
 
 1. Point `DATABASE_URL` at a Postgres 16 (+ pgvector) database.
