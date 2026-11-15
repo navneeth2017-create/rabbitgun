@@ -61,6 +61,9 @@ export async function login(handle: string, password: string): Promise<SessionUs
   const bcrypt = await import("bcryptjs");
   if (!bcrypt.compareSync(password, user.password_hash)) return null;
 
+  // Housekeeping on the way in: expired sessions are dead weight.
+  await db().query("delete from sessions where expires_at < now()");
+
   const token = randomBytes(32).toString("base64url");
   await db().query(
     `insert into sessions (user_id, token_hash, expires_at)
