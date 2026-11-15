@@ -82,6 +82,11 @@ export function Shell({
   defaultAuth?: boolean;
 }) {
   const pathname = usePathname();
+  const liveRoom =
+    !!user &&
+    ["/packcheck", "/specs", "/brain", "/private", "/approvals"].some(
+      (p) => pathname === p || pathname.startsWith(`${p}/`),
+    );
 
   return (
     <div className="min-h-screen lg:grid lg:grid-cols-[248px_1fr]">
@@ -226,8 +231,15 @@ export function Shell({
 
             <div className="ml-auto flex items-center gap-3 sm:ml-0">
               <ThemeSwitcher />
-              <span className="hidden rounded-full border border-warn/30 bg-warn/10 px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] text-warn md:inline">
-                sample data
+              <span
+                className={[
+                  "hidden rounded-full border px-2 py-0.5 font-mono text-[9px] uppercase tracking-[0.12em] md:inline",
+                  liveRoom
+                    ? "border-ok/30 bg-ok/10 text-ok"
+                    : "border-warn/30 bg-warn/10 text-warn",
+                ].join(" ")}
+              >
+                {liveRoom ? "live · postgres" : "sample data"}
               </span>
               <span className="hidden font-mono text-[10px] uppercase tracking-[0.14em] text-soft md:inline">
                 Fri 13 Nov

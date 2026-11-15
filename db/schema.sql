@@ -140,6 +140,7 @@ create table proofs (
   bytes         bigint,
   pages         integer,
   received_at   timestamptz not null default now(),
+  created_by    uuid references users(id),
   unique (sku_id, direction, sha256)
 );
 

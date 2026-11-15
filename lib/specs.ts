@@ -77,6 +77,7 @@ export async function getSku(
   id: string,
 ): Promise<{ sku: Sku; versions: SpecVersion[] } | null> {
   await ensureDb();
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id)) return null;
   const skuRes = await db().query<Sku>(
     `select s.id, s.entity_id, s.code, s.name, s.gtin, e.name as entity
        from skus s join entities e on e.id = s.entity_id where s.id = $1`,
@@ -126,6 +127,7 @@ export async function saveSpec(
        from spec_versions where sku_id = $1`,
     [skuId],
   );
+  const sku = await db().query<{ code: string }>("select code from skus where id = $1", [skuId]);
   const next = latest.rows[0].max + 1;
   await db().query(
     `insert into spec_versions (sku_id, version, approved_copy, dims, required_text, spot_colors, supersedes)
@@ -142,7 +144,7 @@ export async function saveSpec(
   );
   await db().query(
     `insert into audit_log (user_id, action, subject, meta) values ($1, 'spec_save', $2, $3)`,
-    [user.id, `sku:${skuId}`, JSON.stringify({ version: next })],
+    [user.id, `sku:${skuId}`, JSON.stringify({ version: next, sku: sku.rows[0]?.code ?? null })],
   );
   return { version: next };
 }
@@ -159,9 +161,16 @@ export async function lockSpec(
     [specId, user.id],
   );
   if (!rows[0]) return null;
+  const sku = await db().query<{ code: string }>("select code from skus where id = $1", [
+    rows[0].sku_id,
+  ]);
   await db().query(
     `insert into audit_log (user_id, action, subject, meta) values ($1, 'spec_lock', $2, $3)`,
-    [user.id, `spec:${specId}`, JSON.stringify({ version: rows[0].version })],
+    [
+      user.id,
+      `spec:${specId}`,
+      JSON.stringify({ version: rows[0].version, sku: sku.rows[0]?.code ?? null }),
+    ],
   );
   return { skuId: rows[0].sku_id, version: rows[0].version };
 }

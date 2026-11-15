@@ -101,10 +101,22 @@ export default async function SpecPage({
   const versions: SpecVersion[] = data?.versions ?? demoPayloads[id]?.versions ?? [];
   if (!sku) notFound();
 
-  const latest = versions[0];
-  const viewed = versions.find((v) => v.version === Number(sp.v)) ?? latest;
-  if (!viewed) notFound();
-  const isLatest = viewed.version === latest.version;
+  const latest = versions[0] ?? null;
+  const viewed = (sp.v ? versions.find((v) => v.version === Number(sp.v)) : latest) ?? null;
+  if (versions.length > 0 && !viewed) notFound();
+
+  // A brand-new SKU has no version yet — the editor opens on a blank draft.
+  const current: SpecVersion = viewed ?? {
+    id: "",
+    sku_id: sku.id,
+    version: 0,
+    approved_copy: { blocks: [], claims: [], dims: {}, requiredText: [], spotColors: [] },
+    locked_by_name: null,
+    locked_at: null,
+    created_at: "",
+    supersedes: null,
+  };
+  const isLatest = !latest || current.version === latest.version;
   const flash = sp.saved ? ("saved" as const) : sp.locked ? ("locked" as const) : null;
 
   return (
@@ -130,10 +142,11 @@ export default async function SpecPage({
           <span
             className={[
               "rounded-full border px-3 py-1.5 font-mono text-[9.5px] uppercase tracking-[0.14em]",
-              viewed.locked_at ? "border-ember/40 text-ember" : "border-line text-soft",
+              current.locked_at ? "border-ember/40 text-ember" : "border-line text-soft",
             ].join(" ")}
           >
-            v{viewed.version} · {viewed.locked_at ? `locked by ${viewed.locked_by_name}` : "draft"}
+            {current.version > 0 ? `v${current.version}` : "new"} ·{" "}
+            {current.locked_at ? `locked by ${current.locked_by_name}` : "draft"}
           </span>
         </div>
       </header>
@@ -142,11 +155,11 @@ export default async function SpecPage({
         <div className="min-w-0">
           <SpecEditor
             skuId={sku.id}
-            specId={viewed.id}
-            version={viewed.version}
-            locked={Boolean(viewed.locked_at)}
+            specId={viewed?.id ?? null}
+            version={current.version}
+            locked={Boolean(current.locked_at)}
             isLatest={isLatest}
-            payload={viewed.approved_copy}
+            payload={current.approved_copy}
             authOn={authOn}
             flash={flash}
           />
@@ -155,9 +168,14 @@ export default async function SpecPage({
         {/* ---- version history ---- */}
         <aside className="card h-fit p-4">
           <p className="kicker">Version history</p>
+          {versions.length === 0 ? (
+            <p className="mt-2.5 text-[11.5px] leading-relaxed text-muted">
+              No versions yet. Saving creates v1 — then lock it so the gate can check against it.
+            </p>
+          ) : (
           <ol className="mt-2.5 grid gap-1">
             {versions.map((v) => {
-              const active = v.version === viewed.version;
+              const active = v.version === current.version;
               return (
                 <li key={v.id}>
                   <Link
@@ -179,6 +197,7 @@ export default async function SpecPage({
               );
             })}
           </ol>
+          )}
           <p className="mt-3 border-t border-line pt-3 text-[11.5px] leading-snug text-muted">
             {isLatest
               ? "You're looking at the newest version."

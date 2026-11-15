@@ -166,6 +166,71 @@ async function init() {
     )
   `);
 
+  // ---- proofs + check runs (the gate's receipts) ---------------------------
+  await pool.query(`
+    create table if not exists proofs (
+      id          uuid primary key default gen_random_uuid(),
+      sku_id      uuid not null references skus(id) on delete cascade,
+      vendor_id   uuid references vendors(id),
+      direction   text not null check (direction in ('outbound','inbound')),
+      version     integer not null,
+      filename    text not null,
+      storage_key text not null,
+      sha256      text not null,
+      bytes       bigint,
+      pages       integer,
+      received_at timestamptz not null default now(),
+      created_by  uuid references users(id),
+      unique (sku_id, direction, sha256)
+    )
+  `);
+  await pool.query(`create index if not exists proofs_sku on proofs (sku_id, received_at desc)`);
+
+  await pool.query(`
+    create table if not exists check_runs (
+      id              uuid primary key default gen_random_uuid(),
+      proof_id        uuid not null references proofs(id) on delete cascade,
+      spec_version_id uuid not null references spec_versions(id),
+      engine_version  text not null,
+      verdict         text not null check (verdict in ('PASS','PASS WITH NOTES','HOLD')),
+      duration_ms     integer,
+      created_at      timestamptz not null default now()
+    )
+  `);
+  await pool.query(`create index if not exists check_runs_proof on check_runs (proof_id, created_at desc)`);
+
+  await pool.query(`
+    create table if not exists findings (
+      id           uuid primary key default gen_random_uuid(),
+      check_run_id uuid not null references check_runs(id) on delete cascade,
+      code         text not null,
+      severity     text not null check (severity in ('blocker','warning','note')),
+      sheet        text,
+      title        text not null,
+      expected     text,
+      actual       text,
+      detail       text,
+      confidence   numeric(4,3),
+      bbox         jsonb,
+      crop_key     text
+    )
+  `);
+  await pool.query(`create index if not exists findings_run on findings (check_run_id, severity)`);
+
+  await pool.query(`
+    create table if not exists approvals (
+      id           uuid primary key default gen_random_uuid(),
+      proof_id     uuid not null references proofs(id),
+      check_run_id uuid references check_runs(id),
+      user_id      uuid not null references users(id),
+      decision     text not null check (decision in ('approved','held')),
+      proof_sha256 text not null,
+      note         text,
+      at           timestamptz not null default now()
+    )
+  `);
+  await pool.query(`create index if not exists approvals_proof on approvals (proof_id, at desc)`);
+
   // ---- private rooms: personal notes + AI conversation memory -------------
   await pool.query(`
     create table if not exists personal_notes (
