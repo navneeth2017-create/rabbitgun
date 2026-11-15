@@ -65,7 +65,7 @@ export const knowledgeBase: KnowledgeEntry[] = [
   {
     source: "rooms",
     title: "The rooms of Rabbitgun",
-    text: "Brief: the morning read. PackCheck: proofs and findings. Specs: the locked truth the gate checks against. Inbox: threads that move money. Runbook: obligations and owners. Pulse: revenue by entity. Money: flow and leaks. Freight: every box and exception. Vault: every document. Approvals: the receipt log. Brain: ask the business a question. Private: each person's own notes. Atlas: the owner's oversight room.",
+    text: "Brief: the morning read. PackCheck: proofs and findings. Specs: the locked truth the gate checks against. Inbox: threads that move money. Runbook: obligations and owners. Pulse: revenue by entity. Money: flow and leaks. Freight: every box and exception. Vault: every document. Approvals: the receipt log. Brain: ask the business a question. Private: each person's own notes.",
     tags: ["rooms", "core"],
   },
   {

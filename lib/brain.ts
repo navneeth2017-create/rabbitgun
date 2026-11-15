@@ -12,34 +12,62 @@ import { knowledgeBase } from "@/lib/knowledge";
 
 let seeded = false;
 
+/**
+ * Keeps the index in step with the code. Seeds an empty table, updates
+ * entries whose text changed (so a wording fix reaches the live index),
+ * and retires entries that no longer exist. Human corrections are a
+ * different source and are never touched here.
+ */
 export async function ensureKnowledge(): Promise<void> {
   await ensureDb();
   if (seeded) return;
 
   try {
-    const { rows } = await db().query<{ n: number }>(
-      "select count(*)::int as n from knowledge",
+    const { rows } = await db().query<{ id: string; source: string; title: string; chunk: string }>(
+      "select id, source, title, chunk from knowledge where source <> 'correction'",
     );
-    if (rows[0].n === 0) {
-      let ok = 0;
-      for (const entry of knowledgeBase) {
-        try {
-          const vec = await embed(entry.text);
+    const byKey = new Map(rows.map((r) => [`${r.source}::${r.title}`, r]));
+    const corpusKeys = new Set(knowledgeBase.map((e) => `${e.source}::${e.title}`));
+
+    let added = 0;
+    let updated = 0;
+    for (const entry of knowledgeBase) {
+      const key = `${entry.source}::${entry.title}`;
+      const row = byKey.get(key);
+      if (row && row.chunk === entry.text) continue;
+      try {
+        const vec = await embed(entry.text);
+        if (row) {
+          await db().query(
+            "update knowledge set chunk = $1, tags = $2, embedding = $3 where id = $4",
+            [entry.text, entry.tags, `[${vec.join(",")}]`, row.id],
+          );
+          updated++;
+        } else {
           await db().query(
             `insert into knowledge (source, title, chunk, tags, embedding)
              values ($1, $2, $3, $4, $5)`,
             [entry.source, entry.title, entry.text, entry.tags, `[${vec.join(",")}]`],
           );
-          ok++;
-        } catch (err) {
-          console.warn("[brain] embedding failed, leaving entry out:", (err as Error).message);
+          added++;
         }
+      } catch (err) {
+        console.warn("[brain] embedding failed, leaving entry out:", (err as Error).message);
       }
-      if (ok === 0) {
-        console.warn("[brain] knowledge base could not be embedded (no local model?) — search falls back to text matching");
-      } else {
-        console.log(`[brain] trained: ${ok}/${knowledgeBase.length} knowledge entries embedded`);
+    }
+
+    let retired = 0;
+    for (const row of rows) {
+      if (!corpusKeys.has(`${row.source}::${row.title}`)) {
+        await db().query("update knowledge set archived = true where id = $1", [row.id]);
+        retired++;
       }
+    }
+
+    if (added || updated || retired) {
+      console.log(`[brain] index synced: ${added} added, ${updated} updated, ${retired} retired`);
+    } else if (rows.length === 0) {
+      console.warn("[brain] knowledge base could not be embedded (no local model?) — search falls back to text matching");
     }
   } catch (err) {
     console.warn("[brain] knowledge index unavailable:", (err as Error).message);
